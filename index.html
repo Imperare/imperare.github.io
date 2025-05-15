@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Filtrage de texte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #EDEDED;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    h1 {
+      color: #4A7B9F;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+    }
+    button {
+      background-color: #4A7B9F;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      flex: 1;
+      margin: 0 0.25rem;
+    }
+    button:hover {
+      background-color: #3b6582;
+    }
+    .output {
+      margin-top: 1rem;
+      white-space: pre-wrap;
+      background-color: #F5F5F5;
+      padding: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Suppression des caractères spéciaux</h1>
+    <textarea id="inputText" placeholder="Entrez votre texte ici..."></textarea>
+    <div class="button-group">
+      <button onclick="filterText()">Nettoyer</button>
+      <button onclick="copyToClipboard()">Copier</button>
+    </div>
+    <div class="output" id="outputText"></div>
+  </div>
+
+  <script>
+    function filterText() {
+      const input = document.getElementById("inputText").value;
+
+      const cleaned = Array.from(input).filter(char => {
+        const code = char.codePointAt(0);
+        return (
+          (code >= 0x0000 && code <= 0x00FF) ||
+          (code > 0x00FF && code >= 0x1F300 && code <= 0x1FAFF) ||
+          (code >= 0x2600 && code <= 0x26FF) ||
+          (code >= 0x2700 && code <= 0x27BF)
+        );
+      }).join("");
+
+      document.getElementById("outputText").textContent = cleaned;
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById("outputText").textContent;
+      navigator.clipboard.writeText(output)
+        .then(() => alert("Texte copié dans le presse-papier."))
+        .catch(err => alert("Erreur lors de la copie."));
+    }
+  </script>
+</body>
+</html>
