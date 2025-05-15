@@ -70,6 +70,13 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
+      #copyButton:active {
+      background-color: #2f5068;
+    }
+    #copyButton.copied {
+      background-color: #3B8E3E !important;
+      transition: background-color 1s ease;
+    }
   </style>
 </head>
 <body>
@@ -78,20 +85,24 @@
     <textarea id="inputText" placeholder="Entrez votre texte ici..."></textarea>
     <div class="button-group">
       <button onclick="filterText()">Nettoyer</button>
-      <button onclick="copyToClipboard()">Copier</button>
+      <button id="copyButton" onclick="copyToClipboard()">Copier</button>
     </div>
     <div class="output" id="outputText"></div>
   </div>
 
   <script>
     const replacements = [
-      // Liste des remplacements personnalisés
       { from: /—/g, to: '&mdash;' },
+      // Ajouter ici d'autres remplacements au besoin
     ];
 
     function filterText() {
       let input = document.getElementById("inputText").value;
 
+      // Remplacer tous les types d'espaces (tabulations, insécables, etc.) par une espace classique
+      input = input.replace(/[	  ᠎ -   　]/g, ' ');
+
+      // Appliquer les remplacements avant le filtrage
       for (const rule of replacements) {
         input = input.replace(rule.from, rule.to);
       }
@@ -99,7 +110,10 @@
       const cleaned = Array.from(input).filter(char => {
         const code = char.codePointAt(0);
         return (
-          (code >= 0x0000 && code <= 0x00FF) ||
+          (
+            (code >= 0x0000 && code <= 0x00FF) &&
+            (char === ' ' || !/\s/.test(char) || char === '\n')
+          ) ||
           (code > 0x00FF && code >= 0x1F300 && code <= 0x1FAFF) ||
           (code >= 0x2600 && code <= 0x26FF) ||
           (code >= 0x2700 && code <= 0x27BF)
@@ -111,8 +125,10 @@
 
     function copyToClipboard() {
       const output = document.getElementById("outputText").textContent;
+      const copyBtn = document.getElementById("copyButton");
+      copyBtn.classList.add("copied");
+      setTimeout(() => copyBtn.classList.remove("copied"), 1000);
       navigator.clipboard.writeText(output)
-        .then(() => alert("Texte copié dans le presse-papier."))
         .catch(err => alert("Erreur lors de la copie."));
     }
   </script>
