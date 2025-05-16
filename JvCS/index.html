@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -93,6 +94,7 @@
   <script>
     const replacements = [
       { from: /—/g, to: '&mdash;' },
+      { from: /’/g, to: "'" },
       // Ajouter ici d'autres remplacements au besoin
     ];
 
@@ -100,7 +102,7 @@
       let input = document.getElementById("inputText").value;
 
       // Remplacer tous les types d'espaces (tabulations, insécables, etc.) par une espace classique
-      input = input.replace(/[	  ᠎ -   　]/g, ' ');
+      input = input.replace(/[	  ᠎ -   　]/g, ' ');
 
       // Appliquer les remplacements avant le filtrage
       for (const rule of replacements) {
